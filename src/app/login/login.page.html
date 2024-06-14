@@ -1,13 +1,38 @@
 <ion-header [translucent]="true">
+  <ion-item style="padding-top: 20px;">
+      <br><br><br><br><br><br>
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title class="Lcenter-title">
+      SkeletonApp
+    </ion-title>
   </ion-toolbar>
+  </ion-item>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+  <ion-item class="zoom-animation">
     <ion-toolbar>
-      <ion-title size="large">login</ion-title>
+      <ion-title class="L2center-title">
+        Bienvenido!
+      </ion-title>
     </ion-toolbar>
-  </ion-header>
+  </ion-item>
+  <br><br><br>
+  <div class="example-container">
+    <form (ngSubmit)="submitForm()">
+      <label for="username">Username:</label>
+      <ion-input type="text" id="username" [(ngModel)]="username" name="username" required></ion-input>
+      <br>
+      <label for="password">Password:</label>
+      <ion-input type="password" id="password" [(ngModel)]="password" name="password" required></ion-input>
+      <br>
+      <section>
+        <div class="example-button-row">
+          <a mat-flat-button color="basic" [routerLink]="['/home']">Ingresar</a>
+        </div>
+        <ion-button (click)="login()">Login</ion-button>
+        <ion-button (click)="register()">Register</ion-button>
+      </section>
+    </form>
+  </div>
 </ion-content>
