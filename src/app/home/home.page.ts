@@ -1,31 +1,47 @@
-import { Component } from '@angular/core';
-import { Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ServicioDBService } from '../services/servicio-db.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
+  username?: string;
   nombre: string = "Peru";
   selectedSegment: string = 'exp-laboral';
 
-  constructor(private router: Router) { }
+  constructor(private dbService: ServicioDBService, private router: Router) {}
 
-  ngOnInit() { }
-  
+  async ngOnInit() {
+    const isActiveSession = await this.dbService.checkActiveSession();
+    if (!isActiveSession) {
+      this.router.navigate(['/login']);
+    } else {
+      const currentUser = await this.dbService.getCurrentUser();
+      if (currentUser === null) {
+        this.router.navigate(['/login']);
+      } else {
+        this.username = currentUser;
+      }
+    }
+  }
+
   submitForm() {
     console.log("Formulario enviado");
     this.router.navigate(['/otro', { nombre: this.nombre }]);
   }
 
-
   segmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
-}
+  }
 
-guardarDatos(){
-  
-}
+  async logout() {
+    if (this.username) {
+      await this.dbService.updateSessionState(this.username, false);
+    }
+    this.router.navigate(['/login']);
+  }
 }

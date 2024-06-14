@@ -23,7 +23,6 @@
       Usuario: {{ nombre }}
     </ion-toolbar>
   </ion-item>
-<ion-button (click)="guardarDatos()">Guardar Datos</ion-button>
   <form (ngSubmit)="submitForm()">
     <div class="example-container">
       <ion-input class="ion1" label="Nombre" label-placement="floating" fill="solid" placeholder="Ingrese" [(ngModel)]="nombre" name="nombre"></ion-input>
@@ -44,6 +43,9 @@
     <div class="example-button-row">
       <a mat-flat-button color="basic" [routerLink]="['/otro']">¡¡Vamos!!</a>
     </div>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">Logout</ion-button>
+    </ion-buttons>
   </section>
   
 </ion-content>

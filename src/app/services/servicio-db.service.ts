@@ -73,14 +73,14 @@ export class ServicioDBService {
     }
   }
 
-  async validateUser(userName: string, password: string): Promise<boolean> {
+  async validateUser(username: string, password: string): Promise<boolean> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
     }
 
     const sql = 'SELECT * FROM sesion_data WHERE user_name = ? AND password = ?';
     try {
-      const res = await this.database.executeSql(sql, [userName, password]);
+      const res = await this.database.executeSql(sql, [username, password]);
       return res.rows.length > 0;
     } catch (e) {
       console.error('Error al validar el usuario', e);
@@ -88,37 +88,55 @@ export class ServicioDBService {
     }
   }
 
-  async registerSession(userName: string, password: string): Promise<void> {
+  async registerSession(username: string, password: string): Promise<void> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
     }
 
     const sql = 'INSERT INTO sesion_data (user_name, password, active) VALUES (?, ?, 1)';
     try {
-      await this.database.executeSql(sql, [userName, password]);
-      await this._storage?.set('currentUser', userName);
+      await this.database.executeSql(sql, [username, password]);
+      await this._storage?.set('currentUser', username);
       console.log('Sesión registrada y activada.');
     } catch (e) {
       console.error('Error al registrar la sesión', e);
     }
   }
 
-  async updateSessionState(userName: string, isActive: boolean): Promise<void> {
+  async updateSessionState(username: string, isActive: boolean): Promise<void> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
     }
 
     const sql = 'UPDATE sesion_data SET active = ? WHERE user_name = ?';
     try {
-      await this.database.executeSql(sql, [isActive ? 1 : 0, userName]);
+      await this.database.executeSql(sql, [isActive ? 1 : 0, username]);
       if (isActive) {
-        await this._storage?.set('currentUser', userName);
+        await this._storage?.set('currentUser', username);
       } else {
         await this._storage?.remove('currentUser');
       }
       console.log('Estado de sesión actualizado.');
     } catch (e) {
       console.error('Error al actualizar el estado de la sesión', e);
+    }
+  }
+  async getCurrentUser(): Promise<string | null> {
+    if (!this.database) {
+      throw new Error('Base de datos no inicializada.');
+    }
+  
+    const sql = 'SELECT user_name FROM sesion_data WHERE active = 1';
+    try {
+      const res = await this.database.executeSql(sql, []);
+      if (res.rows.length > 0) {
+        return res.rows.item(0).user_name;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error('Error al obtener el usuario actual', e);
+      return null;
     }
   }
 }
