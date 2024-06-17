@@ -21,17 +21,17 @@
   <div class="example-container">
     <form (ngSubmit)="submitForm()">
       <label for="username">Username:</label>
-      <ion-input type="text" id="username" [(ngModel)]="username" name="username" required></ion-input>
+      <ion-input type="text" id="username" class="centrolab"[(ngModel)]="username" name="username" required></ion-input>
       <br>
       <label for="password">Password:</label>
-      <ion-input type="password" id="password" [(ngModel)]="password" name="password" required></ion-input>
+      <ion-input type="password" id="password" class="centrolab" [(ngModel)]="password" name="password" required></ion-input>
       <br>
       <section>
         <div class="example-button-row">
-          <a mat-flat-button color="basic" [routerLink]="['/home']">Ingresar</a>
-        </div>
-        <ion-button (click)="login()">Login</ion-button>
+          <ion-button (click)="login()">Login</ion-button>
         <ion-button (click)="register()">Register</ion-button>
+        </div>
+        
       </section>
     </form>
   </div>

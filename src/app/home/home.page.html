@@ -20,7 +20,7 @@
       <ion-title class="center-title">
         ¡Bienvenido!
       </ion-title>
-      Usuario: {{ nombre }}
+      Ingrese sus datos querido usuario:
     </ion-toolbar>
   </ion-item>
   <form (ngSubmit)="submitForm()">
@@ -40,11 +40,14 @@
     <app-certificaciones *ngSwitchCase="'certificaciones'"></app-certificaciones>
   </div>
   <section>
-    <div class="example-button-row">
+   
       <a mat-flat-button color="basic" [routerLink]="['/otro']">¡¡Vamos!!</a>
-    </div>
+  
     <ion-buttons slot="end">
+
+      <div class="example-button-row">
       <ion-button (click)="logout()">Logout</ion-button>
+    </div>
     </ion-buttons>
   </section>
   

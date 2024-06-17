@@ -8,17 +8,18 @@ import { Storage } from '@ionic/storage-angular';
 export class ServicioDBService {
   public database: SQLiteObject | undefined;
   private _storage: Storage | null = null;
-
+  private authToken: string | null = null; 
+  
   constructor(private sqlite: SQLite, private storage: Storage) {
-    this.initializeDatabase();
-    this.initStorage();
+    this.initializeDatabase().then(() => {
+      this.initStorage().then(() => {
+        this.loadToken();
+      });
+    });
   }
 
-  async initStorage() {
-    const storage = await this.storage.create();
-    this._storage = storage;
-  }
-
+ 
+//función que setea un objeto SQLiteObject
   async initializeDatabase() {
     try {
       const db = await this.sqlite.create({
@@ -32,7 +33,7 @@ export class ServicioDBService {
       console.error('Error al crear la base de datos', e);
     }
   }
-
+//función que genere las tablas 
   private async createTables() {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
@@ -54,6 +55,25 @@ export class ServicioDBService {
     }
   }
 
+   // Método para inicializar el almacenamiento
+   async initStorage() {
+    const storage = await this.storage.create();
+    this._storage = storage;
+  }
+  // Método para cargar el token desde el almacenamiento
+ private async loadToken() {
+  this.authToken = await this._storage?.get('auth_token') || null;
+}
+
+// Método para verificar si el usuario tiene acceso (autenticado)
+async haveaccess(): Promise<boolean> {
+  await this.loadToken();
+  return this.authToken !== null;
+}
+
+
+
+//función que consulta si existe alguna sesión activa
   async checkActiveSession(): Promise<boolean> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
@@ -72,7 +92,7 @@ export class ServicioDBService {
       return false;
     }
   }
-
+//función que valida la existencia de un usuario que inicia sesión
   async validateUser(username: string, password: string): Promise<boolean> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
@@ -87,7 +107,7 @@ export class ServicioDBService {
       return false;
     }
   }
-
+//función que permite  el registro de una sesión
   async registerSession(username: string, password: string): Promise<void> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
@@ -103,6 +123,7 @@ export class ServicioDBService {
     }
   }
 
+  //función que permite  la actualización de una sesión
   async updateSessionState(username: string, isActive: boolean): Promise<void> {
     if (!this.database) {
       throw new Error('Base de datos no inicializada.');
@@ -138,5 +159,36 @@ export class ServicioDBService {
       console.error('Error al obtener el usuario actual', e);
       return null;
     }
+  }
+/////////////////*Almacena aquí temporalmente el token en una variable local*////////////////////////
+
+
+// Método para iniciar sesión y almacenar el token
+  async login(token: string) {
+    await this._storage?.set('auth_token', token);
+    this.authToken = token;  
+  }
+  // Método para cerrar sesión y limpiar el token
+  async logout() {
+    const currentUser = await this._storage?.get('currentUser');
+    if (currentUser) {
+      await this.updateSessionState(currentUser, false);
+    }
+    await this._storage?.remove('auth_token');
+    this.authToken = null;  // Limpiar la variable local
+  }
+// Si el token está almacenado en la variable local, el usuario está autenticado//
+  async isAuthenticated(): Promise<boolean> {
+    if (this.authToken) {
+      return true;  
+    }
+// Almacenar temporalmente el token en la variable local dentro del storage//
+    const token = await this._storage?.get('auth_token');
+    const isLoggedIn = !!token;
+    if (isLoggedIn) {
+      this.authToken = token;  
+    }
+    console.log(`Usuario autenticado: ${isLoggedIn}`);
+    return isLoggedIn;
   }
 }

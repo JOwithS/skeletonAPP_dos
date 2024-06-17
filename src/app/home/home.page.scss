@@ -33,10 +33,33 @@
 }
 
 .example-container mat-form-field + mat-form-field {
-  margin-left: 8px;
+  margin-right: 8px;
+  justify-content: center;
+  text-align: center;
+  display: block;
+  align-items: center;
+
 }
 
 .tittle{
   justify-content: center;
   text-align: center;
+}
+
+.example-button-row{
+  text-align: center;
+  padding: 50px 50px;
+  height: 50%;
+  height: 50%;
+  animation: shake 0.8s cubic-bezier(.26,.07,.19,.87) infinite;
+
+}
+
+@keyframes shake {
+0% { transform: translateX(0); }
+20% { transform: translateX(-10px); }
+40% { transform: translateX(10px); }
+60% { transform: translateX(-10px); }
+80% { transform: translateX(10px); }
+100% { transform: translateX(0); }
 }

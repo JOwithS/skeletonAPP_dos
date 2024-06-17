@@ -42,6 +42,6 @@ export class HomePage implements OnInit {
     if (this.username) {
       await this.dbService.updateSessionState(this.username, false);
     }
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'],  { replaceUrl: true }); 
   }
 }
